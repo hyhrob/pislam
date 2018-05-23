@@ -16,12 +16,11 @@ set(piorb_VERSION_MINOR 1)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
  
 find_package(Eigen3 3.1.0 REQUIRED)
-find_package(GTest REQUIRED)
+#find_package(GTest REQUIRED)
 
 include_directories(
   "${PROJECT_SOURCE_DIR}/include"
   "${EIGEN3_INCLUDE_DIR}"
-  "${GTEST_INCLUDE_DIRS}"
   )
  
 add_library(TestUtil SHARED
@@ -31,10 +30,10 @@ add_library(TestUtil SHARED
 add_executable(GaussianTest
   test/GaussianTest.cpp
   )
-target_link_libraries(GaussianTest TestUtil ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(GaussianTest TestUtil)
 
 add_executable(BilinearTest
   test/BilinearTest.cpp
   )
-target_link_libraries(BilinearTest TestUtil ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(BilinearTest TestUtil)
 

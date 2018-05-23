@@ -19,28 +19,28 @@
 
 #include <cmath>
 #include <random>
+#include <tuple>
+#include <assert.h>
+#include <iostream>
+#include <iomanip>
 
-#include "gtest/gtest.h"
 #include "../include/Gaussian.h"
 
 namespace {
 
-using ::testing::Combine;
-using ::testing::Range;
-using ::testing::Values;
 
 #define RHADD(a, b) ((a >> 1) + (b >> 1) + ((a|b)&1))
 
-class GaussianTest: public ::testing::TestWithParam<::testing::tuple<int, int>> {};
 
 static void reference(const int vstep, const int width,
     const int height, uint8_t *m);
 
-TEST_P(GaussianTest, spiral) {
-  constexpr size_t vstep = 640;
+void GaussianTest(std::tuple<int,int> param)
+{
+  const size_t vstep = 640;
 
-  size_t width = ::testing::get<0>(GetParam());
-  size_t height = ::testing::get<1>(GetParam());
+  size_t width = std::get<0>(param);
+  size_t height = std::get<1>(param);
 
   uint8_t spiral[vstep*vstep];
   uint8_t a[vstep*vstep];
@@ -78,7 +78,7 @@ TEST_P(GaussianTest, spiral) {
       (uint8_t (*)[vstep])b, (uint8_t (*)[vstep])b);
 
 
-#if 0
+#if 1
   for (size_t i = 0; i < height; i += 1) {
     for (size_t j = 0; j < width; j += 1) {
       std::cout << std::setw(3) << (int)spiral[i*vstep+j] << " ";
@@ -112,17 +112,17 @@ TEST_P(GaussianTest, spiral) {
 #else
   for (size_t i = 0; i < height; i += 1) {
     for (size_t j = 0; j < width; j += 1) {
-      ASSERT_EQ(a[i*vstep+j], b[i*vstep+j]);
+      assert(a[i*vstep+j]==b[i*vstep+j]);
     }
   }
 #endif
 }
 
-TEST_P(GaussianTest, random) {
+void GaussianTestRandom(std::tuple<int,int> param) {
   constexpr size_t vstep = 640;
 
-  size_t width = ::testing::get<0>(GetParam());
-  size_t height = ::testing::get<1>(GetParam());
+  size_t width = std::get<0>(param);
+  size_t height = std::get<1>(param);
 
   uint8_t a[vstep*vstep];
   uint8_t b[vstep*vstep];
@@ -145,16 +145,18 @@ TEST_P(GaussianTest, random) {
 
   for (size_t i = 0; i < height; i += 1) {
     for (size_t j = 0; j < width; j += 1) {
-      ASSERT_EQ(a[i*vstep+j], b[i*vstep+j]);
+      assert(a[i*vstep+j]==b[i*vstep+j]);
     }
   }
 }
 
+#if 0
 INSTANTIATE_TEST_CASE_P(
     DimensionTest,
     GaussianTest,
     Combine(Range(16, 64), Range(16, 64)));
     //Combine(Values(640), Values(480)));
+#endif
 
 static void reference(const int vstep, const int width,
     const int height, uint8_t *m) {
@@ -215,3 +217,12 @@ static void reference(const int vstep, const int width,
 }
 
 } /* namespace */
+
+int main()
+{
+
+    GaussianTest(std::make_tuple<int,int>(480,640));
+
+
+    return 0;
+}
